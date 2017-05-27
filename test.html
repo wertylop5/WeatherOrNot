@@ -13,6 +13,7 @@
     <div id="mapid">
       
     </div>
+    <script src="onDBChange.js"></script>
     <script>
       //creates a new map object. takes in the id of the div you made, set init coords, and map zoom
       var mymap = L.map('mapid', {
@@ -110,7 +111,8 @@
       
       /*
       function onMapClick(e) {
-      alert("You clicked the map at " + e.latlng);
+      console.log("You clicked the map at " + e.latlng);
+      writeNewPost(e.latlng[0], e.latlng[1]);
       }
 
       mymap.on('click', onMapClick);
@@ -125,11 +127,11 @@
       .setLatLng(e.latlng)
       .setContent("You clicked the map at " + e.latlng.toString())
       .openOn(mymap);
+      console.log(e.latlng["lat"], e.latlng["lng"]);
       }
 
       //binds clicking action to the callback
       mymap.on('click', onMapClick);
     </script>
-    <script src="onDBChange.js"></script>
   </body>
 </html>
