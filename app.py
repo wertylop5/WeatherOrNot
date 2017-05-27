@@ -11,6 +11,11 @@ app.secret_key = os.urandom(32)
 def main():
     return render_template("main.html")
 
+@app.route('/testroute/')
+def testroute():
+    print "Testing printing in a terminal"
+    return render_template("test.html")
+
 # =====================
 # run app
 # =====================
