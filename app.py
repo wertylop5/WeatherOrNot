@@ -9,7 +9,7 @@ app.secret_key = os.urandom(32)
 # =====================
 @app.route('/', methods = ["GET", "POST"])
 def main():
-    return render_template("base.html")
+    return render_template("main.html")
 
 # =====================
 # run app
