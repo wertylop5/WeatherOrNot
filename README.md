@@ -1,2 +1,0 @@
-# WeatherOrNot
-StuyHacks 4
