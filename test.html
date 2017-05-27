@@ -15,14 +15,64 @@
 			
 		</div>
 		<script>
+			//creates a new map object. takes in the id of the div you made, set init coords, and map zoom
 			var mymap = L.map('mapid').setView([51.505, -0.09], 13);
 			
+			//adds a tile (the actual "map" itself) to the map object. don't modify the things the vars in braces
 			L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoid2VydHlsb3A1IiwiYSI6ImNqMzdnb2ZqYTAwY3Uyd25tYmhsM3Rhc2wifQ.ZOoILYsF0s6kkgzbGKxDTg', {
-    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    maxZoom: 18
-}).addTo(mymap);
+				attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+				maxZoom: 18
+			}).addTo(mymap);
 			
-			//accessToken: 'pk.eyJ1Ijoid2VydHlsb3A1IiwiYSI6ImNqMzdnb2ZqYTAwY3Uyd25tYmhsM3Rhc2wifQ.ZOoILYsF0s6kkgzbGKxDTg'
+			//draw things lol
+			var marker = L.marker([51.505, -0.09]).addTo(mymap);
+			
+			var circle = L.circle([51.508, -0.11], {
+				color: 'red',
+				fillColor: '#f03',
+				fillOpacity: 0.5,
+				radius: 500
+			}).addTo(mymap);
+
+			var polygon = L.polygon([
+				[51.509, -0.08],
+				[51.503, -0.06],
+				[51.51, -0.047]
+			]).addTo(mymap);
+			
+			//Able to bring up popups by clicking icons
+			marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
+			circle.bindPopup("I am a circle.");
+			polygon.bindPopup("I am a polygon.");
+			
+			
+			//directly places popup on map
+			var popup = L.popup()
+				.setLatLng([51.5, -0.09])
+				.setContent("I am a standalone popup.")
+				.openOn(mymap);
+			
+			/*
+			function onMapClick(e) {
+				alert("You clicked the map at " + e.latlng);
+			}
+
+			mymap.on('click', onMapClick);
+			*/
+			
+			//new popup object
+			var popup = L.popup();
+
+			//callback for clicking on the map
+			function onMapClick(e) {
+				popup
+					.setLatLng(e.latlng)
+					.setContent("You clicked the map at " + e.latlng.toString())
+					.openOn(mymap);
+			}
+
+			//binds clicking action to the callback
+			mymap.on('click', onMapClick);
 		</script>
 	</body>
 </html>
