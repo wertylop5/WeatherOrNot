@@ -31,138 +31,76 @@
         return 'http://tile.openweathermap.org/map/' + type + '_new/{z}/{x}/{y}.png?appid=df3599ec58bd5b740af3da99a01e2858';
     };
 
-    //creates a new map object. takes in the id of the div you made, set init coords, and map zoom
-    var map = L.map('map', {
-        boxZoom: false
-    }).setView([51.505, -0.09], 13);
+    var renderMap = function (position) {
+        console.log(position);
+        var coords = position.coords;
+        var map = L.map('map', {
+            boxZoom: false
+        }).setView([coords.latitude, coords.longitude], 10);
 
-    var addLayers = function (layers) {
-        const options = {attribution: ""};
-        const baseLayers = {};
-        const overlays = {};
-        for (const layerName in layers) {
-            const layer = layers[layerName];
-            if (layer.constructor === Array) {
-                baseLayers[layerName] = L.tileLayer(layer[0], options);
-                map.addLayer(baseLayers[layerName]);
-            } else {
-                overlays[layerName] = L.tileLayer(layer, options);
+        var addLayers = function (layers) {
+            const options = {attribution: ""};
+            const baseLayers = {};
+            const overlays = {};
+            for (const layerName in layers) {
+                const layer = layers[layerName];
+                if (layer.constructor === Array) {
+                    baseLayers[layerName] = L.tileLayer(layer[0], options);
+                    map.addLayer(baseLayers[layerName]);
+                } else {
+                    overlays[layerName] = L.tileLayer(layer, options);
+                }
             }
-        }
-        L.control.layers(baseLayers, overlays).addTo(map);
-    };
-    addLayers({
-        streets: [mapBoxUrl('streets-v10'), true],
-        traffic: mapBoxUrl('traffic-day-v2'),
-        clouds: openWeatherMapUrl('clouds'),
-        temperature: openWeatherMapUrl('temp'),
-        precipitation: openWeatherMapUrl('precipitation'),
-        pressure: openWeatherMapUrl('pressure'),
-        wind: openWeatherMapUrl('wind'),
-    });
-
-    L.control.attribution({prefix: "hello"}).addTo(map);
-
-
-    //draw things lol;
-    var marker = L.marker([51.505, -0.09]);
-    var marker2 = L.marker([51.3, -0.09]);
-    var marker3 = L.marker([51.505, -0.03]);
-    var marker4 = L.marker([50.505, -0.01]);
-
-    //place each marker in a diff group
-    var group = L.layerGroup([marker]);
-    var group2 = L.layerGroup([marker2]);
-    var group3 = L.layerGroup([marker3]);
-    var group4 = L.layerGroup([marker4]);
-
-    //only one cvan be active at a time (radio button)
-    var baseLayers = {
-        "group": group,
-        "group2": group2
-    };
-
-    //as many can be used (checkbox)
-    var overlays = {
-        "group3": group3,
-        "group4": group4
-    };
-
-    //add layers to map
-    L.control.layers(baseLayers, overlays).addTo(map);
-
-    var circle = L.circle([51.508, -0.11], {
-        color: 'red',
-        fillColor: '#f03',
-        fillOpacity: 0.5,
-        radius: 500
-    }).addTo(map);
-
-    var polygon = L.polygon([
-        [51.509, -0.08],
-        [51.503, -0.06],
-        [51.51, -0.047]
-    ]).addTo(map);
-
-    //Able to bring up popups by clicking icons
-    marker.bindPopup("<b>Hello world!</b><br>I am a popup1.");
-    marker.bindPopup("<b>Hello world!</b><br>I am a popup2.");
-    marker.bindPopup("<b>Hello world!</b><br>I am a popup3.");
-    marker.bindPopup("<b>Hello world!</b><br>I am a popup4.");
-    circle.bindPopup("I am a circle.");
-    polygon.bindPopup("I am a polygon.");
-
-
-    //directly places popup on map
-    var popup = L.popup()
-        .setLatLng([51.5, -0.09])
-        .setContent("I am a standalone popup.")
-        .openOn(map);
-
-    /*
-     function onMapClick(e) {
-     alert("You clicked the map at " + e.latlng);
-     }
-
-     mymap.on('click', onMapClick);
-     */
-
-    var appId = "33d3623cc587372f825d46cc063cf544";
-
-    var weatherAtUrl = function (lat, lng) {
-        return "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lng + "&units=imperial&appid=" + appId;
-    };
-
-    var popup = L.popup();
-
-    //callback for clicking on the map
-    function onMapClick(e) {
-        const latlng = e.latlng;
-        fetch(weatherAtUrl(latlng.lat, latlng.lng)).then(function (response) {
-            return response.json();
-        }).then(function (json) {
-            popup.setLatLng(latlng)
-                .setContent(format('The weather in {name}, {country} is {weather}: <br>'
-                    + '\tTemperature: {currentTemp}&deg;F, Low: {minTemp}&deg;F, High: {maxTemp}&degF;<br>'
-                    + '\tPressure: {pressure} hPa<br>'
-                    + '\tHumidity: {humidity}%<br>'
-                    + '\tWind: {windSpeed} mph', {
-                    name: json.name,
-                    country: json.sys.country,
-                    weather: json.weather.description,
-                    currentTemp: json.main.temp,
-                    minTemp: json.main.temp_min,
-                    maxTemp: json.main.temp_max,
-                    pressure: json.main.pressure,
-                    humidity: json.main.humidity,
-                    windSpeed: json.wind.speed
-                }))
-                .openOn(map);
+            L.control.layers(baseLayers, overlays).addTo(map);
+        };
+        addLayers({
+            streets: [mapBoxUrl('streets-v10'), true],
+            traffic: mapBoxUrl('traffic-day-v2'),
+            clouds: openWeatherMapUrl('clouds'),
+            temperature: openWeatherMapUrl('temp'),
+            precipitation: openWeatherMapUrl('precipitation'),
+            pressure: openWeatherMapUrl('pressure'),
+            wind: openWeatherMapUrl('wind'),
         });
-    }
 
-    //binds clicking action to the callback
-    map.on('click', onMapClick);
+        var appId = "33d3623cc587372f825d46cc063cf544";
+
+        var weatherAtUrl = function (lat, lng) {
+            return "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lng + "&units=imperial&appid=" + appId;
+        };
+
+        //callback for clicking on the map
+        function onMapClick(e) {
+            const latlng = e.latlng;
+            fetch(weatherAtUrl(latlng.lat, latlng.lng)).then(function (response) {
+                return response.json();
+            }).then(function (json) {
+                L.popup().setLatLng(latlng)
+                    .setContent(format('The weather in {name}, {country} is {weather}: <br>'
+                        + 'Temperature: {currentTemp}&deg; F, Low: {minTemp}&deg; F, High: {maxTemp}&deg F;<br>'
+                        + '\tPressure: {pressure} hPa<br>'
+                        + '\tHumidity: {humidity}%<br>'
+                        + '\tWind: {windSpeed} mph', {
+                        name: json.name,
+                        country: json.sys.country,
+                        weather: json.weather[0].description,
+                        currentTemp: json.main.temp,
+                        minTemp: json.main.temp_min,
+                        maxTemp: json.main.temp_max,
+                        pressure: json.main.pressure,
+                        humidity: json.main.humidity,
+                        windSpeed: json.wind.speed
+                    }).replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;"))
+                    .openOn(map);
+            });
+        }
+
+        //binds clicking action to the callback
+        map.on('click', onMapClick);
+    };
+
+    navigator.geolocation.getCurrentPosition(renderMap);
+
 </script>
 </body>
 </html>
