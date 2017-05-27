@@ -16,7 +16,9 @@
 		</div>
 		<script>
 			//creates a new map object. takes in the id of the div you made, set init coords, and map zoom
-			var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+			var mymap = L.map('mapid', {
+				boxZoom:false
+			}).setView([51.505, -0.09], 13);
 			
 			//adds a tile (the actual "map" itself) to the map object. don't modify the things the vars in braces
 			L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoid2VydHlsb3A1IiwiYSI6ImNqMzdnb2ZqYTAwY3Uyd25tYmhsM3Rhc2wifQ.ZOoILYsF0s6kkgzbGKxDTg', {
@@ -24,8 +26,36 @@
 				maxZoom: 18
 			}).addTo(mymap);
 			
-			//draw things lol
-			var marker = L.marker([51.505, -0.09]).addTo(mymap);
+			L.control.attribution({prefix:"hello"}).addTo(mymap);
+			
+			
+			
+			//draw things lol;
+			var marker = L.marker([51.505, -0.09]);
+			var marker2 = L.marker([51.3, -0.09]);
+			var marker3 = L.marker([51.505, -0.03]);
+			var marker4 = L.marker([50.505, -0.01]);
+			
+			//place each marker in a diff group
+			var group = L.layerGroup([marker]);
+			var group2 = L.layerGroup([marker2]);
+			var group3 = L.layerGroup([marker3]);
+			var group4 = L.layerGroup([marker4]);
+			
+			//only one cvan be active at a time (radio button)
+			var baseLayers = {
+				"group":group,
+				"group2":group2
+			};
+			
+			//as many can be used (checkbox)
+			var overlays = {
+				"group3":group3,
+				"group4":group4
+			};
+			
+			//add layers to map
+			L.control.layers(baseLayers, overlays).addTo(mymap);
 			
 			var circle = L.circle([51.508, -0.11], {
 				color: 'red',
@@ -41,7 +71,10 @@
 			]).addTo(mymap);
 			
 			//Able to bring up popups by clicking icons
-			marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
+			marker.bindPopup("<b>Hello world!</b><br>I am a popup1.");
+			marker.bindPopup("<b>Hello world!</b><br>I am a popup2.");
+			marker.bindPopup("<b>Hello world!</b><br>I am a popup3.");
+			marker.bindPopup("<b>Hello world!</b><br>I am a popup4.");
 			circle.bindPopup("I am a circle.");
 			polygon.bindPopup("I am a polygon.");
 			
