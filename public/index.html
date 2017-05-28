@@ -47,32 +47,47 @@
 <body>
 <div id="map"></div>
 <button onClick="home()">Home</button>
-<button onClick="getComments()">List comments</button>
 <script>
 	
 	var postToServer = function(latLng, comment){
 		var query = firebase.database(defaultApp).ref('/post');
 		var newpost = query.push();
-		var latlng = latLng.lat + "," + latLng.lng
+		var latlng = (+latLng.lat.toFixed(2)) + "," + (+latLng.lng.toFixed(2))
 		newpost.set({'latlng': latlng , 'comment': comment})
 	}
 
 	//submitComments(1,2,"4567");
 
 	var getComments = function(){
-		popup.
-		var latlng = lat.toString() + "," + lng.toString()
-		var query = firebase.database().ref('/post')
+		var thing = popup.getLatLng()
+		
+		if (thing == null) {
+			
+		}
+		var latlng = (+thing.lat.toFixed(2)) + "," + (+thing.lng.toFixed(2))
+		var query = firebase.database(defaultApp).ref('/post')
 		.orderByChild('latlng').equalTo(latlng);
 		query.on('value', function(snapshot) {
 			snapshot.forEach(function(childSnapshot) {
 			var childData = childSnapshot.val();
-			console.log(childData);
+			console.log(childData)
+			L.marker(parseLatLng(latlng)).bindPopup(L.popup()
+					.setLatLng(thing.lat, thing.lng)
+					.setContent(childData.latlng + "<br>" + childData.comment))
+				.addTo(map)
 			//append to innerhtml 
 			});
 		});
 	}
 
+	//string to obj
+	function parseLatLng(string) {
+		var splitted = string.split(",");
+		var ar = []
+		ar.push(parseFloat(splitted[0]))
+		ar.push(parseFloat(splitted[1]))
+		return ar
+	}
 	//getComments(1,2)
 	
     var attribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
@@ -125,7 +140,8 @@
     });
 
     var commentForm = '<br><textarea id="comment"></textarea>' +
-        '<br><button onClick="submitComment()">Submit</button>';
+        '<br><button onClick="submitComment()">Submit</button>'+
+		'<br><button onClick="getComments()">View Comments around here</button>';
 
     var submitComment = function () {
         var comment = document.getElementById('comment').value;
