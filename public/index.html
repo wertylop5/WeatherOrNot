@@ -75,6 +75,7 @@
 		if (thing == null) {
 			
 		}
+		//var latlng = (+thing.lat.toFixed(2)) + "," + (+thing.lng.toFixed(2))
 		var latlng = (+thing.lat.toFixed(2)) + "," + (+thing.lng.toFixed(2))
 		var query = firebase.database(defaultApp).ref('/post')
 		.orderByChild('latlng').equalTo(latlng);
@@ -91,18 +92,48 @@
 			
 			});
 		});
-		
+		var obj
 		for (var index of markerMap.keys()) {
-			var baseString = ""
-			for (var obj of markerMap.get(index)) {
-				baseString += "<h3>" + obj.comment + "</h3><br>" + 
-					obj.time + "<br><br>"
+			var baseString = "<h1>"+ index + "</h1><br><div id='limit'>"
+			var tempArray = []
+			for (obj of markerMap.get(index)) {
+				var tempPopup = L.popup()
+				var tempMarker = L.marker([obj.lat, obj.lng])
 				
-				L.marker([obj.lat, obj.lng]).bindPopup(L.popup()
-					//.setLatLng(obj.lat, obj.lng)
-					.setContent("<h1>"+ index + "</h1><br><div id='limit'>" + baseString + "</div>"))
+				
+				if (tempArray.indexOf([obj.lat, obj.lng]) == -1) {
+					console.log("unique")
+					
+					tempArray.push([obj.lat, obj.lng])
+					
+					/*tempMarker.bindPopup(tempPopup
+							.setContent("<h1>"+ index + "</h1><br><div id='limit'>" + 
+							"<h3>" + obj.comment + "</h3><br>" + 
+							obj.time + "<hr>"))
+						.addTo(map)*/
+					
+					baseString += "<h3>" + obj.comment + "</h3><br>" + 
+						obj.time + "<hr>"
+				}
+				else {
+					console.log("overlap")
+					/*baseString += "<h3>" + obj.comment + "</h3><br>" + 
+						obj.time + "<hr>"
+					
+					tempMarker.bindPopup(tempPopup
+						.setContent(tempPopup.getContent + 
+						"<h3>" + obj.comment + "</h3><br>" + 
+						obj.time + "<hr>" + "</div>"))
+					*/
+				}
+				
+				L.marker(parseLatLng(index)).bindPopup(L.popup()
+					.setLatLng(thing.lat, thing.lng)
+					.setContent(baseString + "</div>"))
 					.addTo(map)
+				
 			}
+			
 			/*
 			L.marker(parseLatLng(index)).bindPopup(L.popup()
 				.setLatLng(thing.lat, thing.lng)
