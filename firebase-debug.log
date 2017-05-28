@@ -1,69 +1,34 @@
 [debug] ----------------------------------------------------------------------
-[debug] Command:      C:\Program Files\nodejs\node.exe C:\Users\Stanley\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase serve
+[debug] Command:      C:\Program Files\nodejs\node.exe C:\Users\kkyse\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase serve
 [debug] CLI Version:  3.9.0
 [debug] Platform:     win32
-[debug] Node Version: v4.1.2
-[debug] Time:         Sat May 27 2017 23:18:41 GMT-0400 (Eastern Daylight Time)
+[debug] Node Version: v6.9.5
+[debug] Time:         Sun May 28 2017 00:44:13 GMT-0400 (Eastern Daylight Time)
 [debug] ----------------------------------------------------------------------
 [debug] 
 [debug] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
 [debug] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
-[debug] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token { refresh_token: '1/O16Cm59b3Rm42VG7_Bq6KlXoaH444Xuo8LIB1cUWSgg',
+[debug] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token { refresh_token: '1/yxQujK5QOzRaL8dazJ4OWNGzJxUBiRVhFBrliPgwmLDm4JM1az7AshAK7F4EAtTs',
   client_id: '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com',
   client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi',
   grant_type: 'refresh_token',
   scope: 'email https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/firebase openid' } 
- Sat May 27 2017 23:18:41 GMT-0400 (Eastern Daylight Time)
+ Sun May 28 2017 00:44:13 GMT-0400 (Eastern Daylight Time)
 [debug] <<< HTTP RESPONSE 200
-[debug] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/weatherornot-6545c  
- Sat May 27 2017 23:18:41 GMT-0400 (Eastern Daylight Time)
+[debug] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/weatherornot-8a254  
+ Sun May 28 2017 00:44:13 GMT-0400 (Eastern Daylight Time)
 [debug] <<< HTTP RESPONSE 200
-[debug] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/weatherornot-6545c/tokens  
- Sat May 27 2017 23:18:42 GMT-0400 (Eastern Daylight Time)
-[debug] <<< HTTP RESPONSE 200
-[info] 
-[info] === Serving from 'C:\Users\Stanley\Documents\GitHub\WeatherOrNot'...
-[info] 
-[debug] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/weatherornot-6545c  
- Sat May 27 2017 23:18:42 GMT-0400 (Eastern Daylight Time)
-[debug] <<< HTTP RESPONSE 200
-[debug] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/881439506504/clients/_:getWebAppConfig  
- Sat May 27 2017 23:18:42 GMT-0400 (Eastern Daylight Time)
-[debug] <<< HTTP RESPONSE 200
-[info] i  hosting: Serving hosting files from: public
-[info] +  hosting: Local server: http://localhost:5000
-
-[debug] ----------------------------------------------------------------------
-[debug] Command:      C:\Program Files\nodejs\node.exe C:\Users\Stanley\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase serve
-[debug] CLI Version:  3.9.0
-[debug] Platform:     win32
-[debug] Node Version: v4.1.2
-[debug] Time:         Sun May 28 2017 00:14:48 GMT-0400 (Eastern Daylight Time)
-[debug] ----------------------------------------------------------------------
-[debug] 
-[debug] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
-[debug] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token { refresh_token: '1/O16Cm59b3Rm42VG7_Bq6KlXoaH444Xuo8LIB1cUWSgg',
-  client_id: '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com',
-  client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi',
-  grant_type: 'refresh_token',
-  scope: 'email https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/firebase openid' } 
- Sun May 28 2017 00:14:48 GMT-0400 (Eastern Daylight Time)
-[debug] <<< HTTP RESPONSE 200
-[debug] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/weatherornot-6545c  
- Sun May 28 2017 00:14:48 GMT-0400 (Eastern Daylight Time)
-[debug] <<< HTTP RESPONSE 200
-[debug] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/weatherornot-6545c/tokens  
- Sun May 28 2017 00:14:48 GMT-0400 (Eastern Daylight Time)
+[debug] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/weatherornot-8a254/tokens  
+ Sun May 28 2017 00:44:14 GMT-0400 (Eastern Daylight Time)
 [debug] <<< HTTP RESPONSE 200
 [info] 
-[info] === Serving from 'C:\Users\Stanley\Documents\GitHub\WeatherOrNot'...
+[info] === Serving from 'C:\Users\kkyse\WebstormProjects\WeatherOrNot'...
 [info] 
-[debug] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/weatherornot-6545c  
- Sun May 28 2017 00:14:49 GMT-0400 (Eastern Daylight Time)
+[debug] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/weatherornot-8a254  
+ Sun May 28 2017 00:44:14 GMT-0400 (Eastern Daylight Time)
 [debug] <<< HTTP RESPONSE 200
-[debug] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/881439506504/clients/_:getWebAppConfig  
- Sun May 28 2017 00:14:49 GMT-0400 (Eastern Daylight Time)
+[debug] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/1026601902798/clients/_:getWebAppConfig  
+ Sun May 28 2017 00:44:14 GMT-0400 (Eastern Daylight Time)
 [debug] <<< HTTP RESPONSE 200
 [info] i  hosting: Serving hosting files from: public
 [info] +  hosting: Local server: http://localhost:5000

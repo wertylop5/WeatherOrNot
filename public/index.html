@@ -1,38 +1,39 @@
 <html>
 <head>
-   
-	
-	<script defer src="/__/firebase/4.0.0/firebase-app.js"></script>
+
+
+    <script defer src="/__/firebase/4.0.0/firebase-app.js"></script>
     <!-- include only the Firebase features as you need -->
     <script defer src="/__/firebase/4.0.0/firebase-auth.js"></script>
     <script defer src="/__/firebase/4.0.0/firebase-database.js"></script>
     <script defer src="/__/firebase/4.0.0/firebase-messaging.js"></script>
     <script defer src="/__/firebase/4.0.0/firebase-storage.js"></script>
-	
-	<script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
-		<script>
-		  // Initialize Firebase
-		  var config = {
-			apiKey: "AIzaSyBMitEISRAJbKP6lEjhAYyAsemK_2yhSLE",
-			authDomain: "weatherornot-6545c.firebaseapp.com",
-			databaseURL: "https://weatherornot-6545c.firebaseio.com",
-			projectId: "weatherornot-6545c",
-			storageBucket: "weatherornot-6545c.appspot.com",
-			messagingSenderId: "881439506504"
-		  };
-		  var defaultApp = firebase.initializeApp(config);
-		</script>
-	
-	 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
+
+    <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyBMitEISRAJbKP6lEjhAYyAsemK_2yhSLE",
+            authDomain: "weatherornot-6545c.firebaseapp.com",
+            databaseURL: "https://weatherornot-6545c.firebaseio.com",
+            projectId: "weatherornot-6545c",
+            storageBucket: "weatherornot-6545c.appspot.com",
+            messagingSenderId: "881439506504"
+        };
+        var defaultApp = firebase.initializeApp(config);
+    </script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
           integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="
           crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"
             integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg=="
             crossorigin=""></script>
-	
+
     <script src='https://api.mapbox.com/mapbox-gl-js/v0.36.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v0.36.0/mapbox-gl.css' rel='stylesheet'/>
     <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+    <script src="https://fastcdn.org/Underscore.js/1.8.3/underscore-min.js"></script>
     <script src="string-format.js"></script>
     <style>
         #map {
@@ -49,58 +50,103 @@
 <button onClick="home()">Home</button>
 <button onClick="getComments()">List comments</button>
 <script>
-	
-	var postToServer = function(latLng, comment){
-		var query = firebase.database(defaultApp).ref('/post');
-		var newpost = query.push();
-		var latlng = latLng.lat + "," + latLng.lng
-		newpost.set({'latlng': latlng , 'comment': comment})
-	}
 
-	//submitComments(1,2,"4567");
+    const query = function () {
+        return firebase.database(defaultApp).ref('/post');
+    };
 
-	var getComments = function(){
-		popup.
-		var latlng = lat.toString() + "," + lng.toString()
-		var query = firebase.database().ref('/post')
-		.orderByChild('latlng').equalTo(latlng);
-		query.on('value', function(snapshot) {
-			snapshot.forEach(function(childSnapshot) {
-			var childData = childSnapshot.val();
-			console.log(childData);
-			//append to innerhtml 
-			});
-		});
-	}
+    const floorLatLng = function (latLng) {
+        return latLng.lat.toFixed(2) + ', ' + latLng.lng.toFixed(2);
+    };
 
-	//getComments(1,2)
-	
-    var attribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
+    const formatLatLng = function (latLng) {
+        return latLng.lat.toFixed(3) + '°, ' + latLng.lng.toFixed(3) + '°';
+    };
 
-    var mapBoxUrl = function (type) {
+    const postToServer = function (latLng, comment) {
+        const post = query().push();
+        post.set({
+            nearLatLng: floorLatLng(latLng),
+            lat: latLng.lat,
+            lng: latLng.lng,
+            time: new Date().toLocaleString(),
+            comment: comment
+        });
+    };
+
+    var markerMap = new Map();
+
+    var getComments = function () {
+        var thing = popup.getLatLng();
+
+        if (thing == null) {
+
+        }
+        var latlng = (+thing.lat.toFixed(2)) + "," + (+thing.lng.toFixed(2));
+        var query = firebase.database(defaultApp).ref('/post')
+            .orderByChild('nearLatLng').equalTo(latlng);
+        query.on('value', function (snapshot) {
+            snapshot.forEach(function (childSnapshot) {
+                var childData = childSnapshot.val();
+                console.log(childData);
+
+                if (!markerMap.has(latlng)) {
+                    markerMap.set(latlng, [])
+                }
+
+                markerMap.get(latlng).push(childData.comment)
+
+            });
+        });
+
+        for (var index of markerMap.keys()) {
+            var baseString = "";
+            for (var comment of markerMap.get(index)) {
+                baseString += "<h3>" + comment + "</h3><br><br>"
+            }
+
+            L.marker(parseLatLng(index)).bindPopup(L.popup()
+                .setLatLng(thing.lat, thing.lng)
+                .setContent("<h1>" + index + "</h1><br><div id='limit'>" + baseString + "</div>"))
+                .addTo(map)
+        }
+    };
+
+    //string to obj
+    function parseLatLng(string) {
+        var splitted = string.split(",");
+        var ar = [];
+        ar.push(parseFloat(splitted[0]));
+        ar.push(parseFloat(splitted[1]));
+        return ar
+    }
+
+    const attribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
+
+    const mapBoxUrl = function (type) {
         return 'https://api.mapbox.com/styles/v1/mapbox/' + type + '/tiles/512/{z}/{x}/{y}?access_token=pk.eyJ1Ijoid2VydHlsb3A1IiwiYSI6ImNqMzdnb2ZqYTAwY3Uyd25tYmhsM3Rhc2wifQ.ZOoILYsF0s6kkgzbGKxDTg';
     };
 
-    var openWeatherMapUrl = function (type) {
+    const openWeatherMapUrl = function (type) {
         return 'http://tile.openweathermap.org/map/' + type + '_new/{z}/{x}/{y}.png?appid=df3599ec58bd5b740af3da99a01e2858';
     };
 
-    var appId = "33d3623cc587372f825d46cc063cf544";
+    const appId = "33d3623cc587372f825d46cc063cf544";
 
-    var weatherAtUrl = function (lat, lng) {
+    const weatherAtUrl = function (lat, lng) {
         return "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lng + "&units=imperial&appid=" + appId;
     };
 
-    var map = L.map('map', {
+    const map = L.map('map', {
         boxZoom: false
     }).setView([0, 0], 10);
 
-    var addLayers = function (layers) {
+    const addLayers = function (layers) {
         const options = {attribution: ""};
         const baseLayers = {};
         const overlays = {};
         for (const layerName in layers) {
-            var layer = layers[layerName];
+            let layer = layers[layerName];
             if (layer.constructor === Array) {
                 layer = layer[0];
                 baseLayers[layerName] = typeof(layer) !== "string" ? layer : L.tileLayer(layer, options);
@@ -124,48 +170,82 @@
         wind: openWeatherMapUrl('wind')
     });
 
-    var commentForm = '<br><textarea id="comment"></textarea>' +
-        '<br><button onClick="submitComment()">Submit</button>';
+    const popup = L.popup();
 
-    var submitComment = function () {
-        var comment = document.getElementById('comment').value;
+    const commentForm = '<br><textarea id="comment"></textarea>' +
+        '<br><button onClick="submitComment()">Submit</button>' +
+        '<br><button onClick="getComments()" id="viewComments">View Comments</button>';
+
+    const submitComment = function () {
+        const comment = document.getElementById('comment').value;
         console.log(comment);
-		postToServer(popup.getLatLng(), comment);
+        postToServer(popup.getLatLng(), comment);
     };
 
-    var popup = L.popup();
+    // not working yet, using getComments instead
+    const viewComments = function () {
+        const nearLatLng = floorLatLng(popup.getLatLng());
+        query()
+            .orderByChild('nearLatLng')
+            .equalTo(nearLatLng)
+            .on('value', function (snapshot) {
+                const commentsByLatLng = new Map();
+                snapshot.forEach(function (childSnapshot) {
+                    const comment = childSnapshot.val();
+                    const latLng = {lat: comment.lat, lng: comment.lng};
+                    if (commentsByLatLng.has(latLng)) {
+                        commentsByLatLng.get(latLng).push(comment);
+                    } else {
+                        commentsByLatLng.set(latLng, [comment]);
+                    }
+                });
+                commentsByLatLng.forEach(function (comments, latLng) {
+                    let content = formatLatLng(latLng);
+                    for (comment of comments) {
+                        content += '<br>' + comment.time + ': ' + comment.comment;
+                    }
+                    L.marker(latLng)
+                        .bindPopup(L.popup()
+                            .setLatLng(latLng)
+                            .setContent(content)
+                        ).addTo(map);
+                });
+            });
+    };
 
-    var showWeatherStats = function (e) {
+    const showWeatherStats = function (e) {
         if (!e.hasOwnProperty('latlng')) {
             return;
         }
-        const latlng = e.latlng;
-        fetch(weatherAtUrl(latlng.lat, latlng.lng)).then(function (response) {
+        const latLng = e.latlng;
+        fetch(weatherAtUrl(latLng.lat, latLng.lng)).then(function (response) {
             return response.json();
         }).then(function (json) {
-            popup.setLatLng(latlng)
-                .setContent(format('The weather in {name}, {country} is {weather}: <br>'
-                    + 'Temperature: {currentTemp}&deg; F, Low: {minTemp}&deg; F, High: {maxTemp}&deg F;<br>'
-                    + '\tPressure: {pressure} hPa<br>'
-                    + '\tHumidity: {humidity}%<br>'
-                        + '\tWind: {windSpeed} mph<br>', {
-                    name: json.name,
-                    country: json.sys.country,
-                    weather: json.weather[0].description,
-                    currentTemp: json.main.temp,
-                    minTemp: json.main.temp_min,
-                    maxTemp: json.main.temp_max,
-                    pressure: json.main.pressure,
-                    humidity: json.main.humidity,
-                    windSpeed: json.wind.speed
-                    }).replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
+            popup.setLatLng(latLng)
+                .setContent(format(
+                        formatLatLng(latLng) + '<br>' +
+                        'The weather in {name}, {country} is {weather}: <br>' +
+                        '\tTemperature: {currentTemp}&deg; F, Low: {minTemp}&deg; F, High: {maxTemp}&deg F;<br>' +
+                        '\tPressure: {pressure} hPa<br>' +
+                        '\tHumidity: {humidity}%<br>' +
+                        '\tWind: {windSpeed} mph<br>', {
+                            name: json.name,
+                            country: json.sys.country,
+                            weather: json.weather[0].description,
+                            currentTemp: json.main.temp,
+                            minTemp: json.main.temp_min,
+                            maxTemp: json.main.temp_max,
+                            pressure: json.main.pressure,
+                            humidity: json.main.humidity,
+                            windSpeed: json.wind.speed
+                        }).replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
                     + commentForm)
                 .openOn(map);
         });
     };
 
-    clicked = 0;
-    var timeout = 200;
+    let clicked = 0;
+    const timeout = 200;
 
     map.on('click', function (e) {
         clicked++;
@@ -182,23 +262,16 @@
         map.zoomIn();
     });
 
-    var renderMap = function (position) {
-        console.log(position);
-        var coords = position.coords;
-
-    };
-
     navigator.geolocation.getCurrentPosition(function (position) {
         map.setView([position.coords.latitude, position.coords.longitude]);
     });
 
-    var home = function () {
-        var currentZoom = map.getZoom();
+    const home = function () {
+        const currentZoom = map.getZoom();
         navigator.geolocation.getCurrentPosition(function (position) {
             map.flyTo([position.coords.latitude, position.coords.longitude], Math.max(currentZoom, 10));
         });
     }
-
 
 </script>
 </body>
