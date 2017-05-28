@@ -123,17 +123,36 @@
 
       //callback for clicking on the map
       function onMapClick(e) {
-		try{
+		//try{
+			if (e != null) {
+				if (e.hasOwnProperty("originalEvent") ) { 
+					var guy = e.originalEvent;
+					if ("charCode" in guy) {
+						getComment();
+						return;
+					}
+					else {
+						console.log("Faile");
+					}
+				}
+			}
+			
 		  popup
 			  .setLatLng(e.latlng)
-			  .setContent("<input id='lol'></input> <h2>@" + e.latlng.toString()+"</h2>")
+			  .setContent(
+"<form onSubmit='javascript:getComment()'>" + 
+//>"<input id='lol'></input> " +"<button onClick='getComment()'>Submit</button></form>" +
+"<input id='lol'></input> " +"<button type='submit'>Submit</button></form>" +
+"<h2>@" + e.latlng.toString()+"</h2>")
 			  .openOn(mymap);
 		  console.log(e.latlng["lat"], e.latlng["lng"]);
-		 }
+		  
+		  
+		 /*}
 		 catch(err) {
 			var test = document.getElementById("lol").value;
 			console.log("test: " + test);
-		 }
+		 }*/
       }
 	  /*
 	  mymap.on("keypress", function(e) {
@@ -141,6 +160,15 @@
 			console.log("testkey: " + test);
 		});
 */
+		function getComment() {
+			var test = document.getElementById("lol").value;
+			console.log("testkey: " + test);
+			popup
+			  .setContent(
+"<h1>Submitted comment</h1>"+
+"<input id='lol'></input> " +"<button onClick='getComment()'>Submit</button>" +
+"<h2>@" + popup.getLatLng().toString()+"</h2>")
+		}
       //binds clicking action to the callback
       mymap.on('click', onMapClick);
     </script>
