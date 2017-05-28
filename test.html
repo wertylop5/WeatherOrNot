@@ -123,13 +123,24 @@
 
       //callback for clicking on the map
       function onMapClick(e) {
-      popup
-      .setLatLng(e.latlng)
-      .setContent("You clicked the map at " + e.latlng.toString())
-      .openOn(mymap);
-      console.log(e.latlng["lat"], e.latlng["lng"]);
+		try{
+		  popup
+			  .setLatLng(e.latlng)
+			  .setContent("<input id='lol'></input> <h2>@" + e.latlng.toString()+"</h2>")
+			  .openOn(mymap);
+		  console.log(e.latlng["lat"], e.latlng["lng"]);
+		 }
+		 catch(err) {
+			var test = document.getElementById("lol").value;
+			console.log("test: " + test);
+		 }
       }
-
+	  /*
+	  mymap.on("keypress", function(e) {
+			var test = document.getElementById("lol").value;
+			console.log("testkey: " + test);
+		});
+*/
       //binds clicking action to the callback
       mymap.on('click', onMapClick);
     </script>
