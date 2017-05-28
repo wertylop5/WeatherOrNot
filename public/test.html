@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<script defer src="/__/firebase/4.0.0/firebase-app.js"></script>
+		<script defer src="/__/firebase/4.0.0/firebase-database.js"></script>
+		
+		<script defer src="/__/firebase/init.js"></script>
+		
+		<script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+		<script>
+			// Initialize Firebase
+			var config = {
+				apiKey: "AIzaSyBMitEISRAJbKP6lEjhAYyAsemK_2yhSLE",
+				authDomain: "weatherornot-6545c.firebaseapp.com",
+				databaseURL: "https://weatherornot-6545c.firebaseio.com",
+				projectId: "weatherornot-6545c",
+				storageBucket: "weatherornot-6545c.appspot.com",
+				messagingSenderId: "881439506504"
+			};
+			var defaultApp = firebase.initializeApp(config);
+		  
+			console.log(defaultApp.name);
+		  
+			var defaultStorage = firebase.storage();
+			var defaultDatabase = firebase.database();
+		</script>
+	</head>
+	
+	<body>
+		<textarea id="name">name</textarea>
+		<textarea id="msg">msg</textarea>
+		<button onClick="writeUserData()">Hey</button>
+		
+		<script>
+			var nameText = document.getElementById("name");
+			var msgText = document.getElementById("msg");
+			console.log(nameText);
+			
+			nameText.addEventListener("click", writeUserData);
+			function writeUserData(name, msg) {
+			  /*firebase.database().ref().set({
+				name:nameText.value,
+				message:msgText.value
+			  });*/
+			  firebase.database().ref().push({
+				name:nameText.value,
+				message:msgText.value
+			  });
+			}
+			
+			
+		</script>
+	</body>
+</html>

@@ -1,0 +1,158 @@
+
+
+<html>
+	<head>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
+   integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="
+   crossorigin=""/>
+		 <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"
+   integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg=="
+   crossorigin=""></script>
+   
+		<style>
+		#mapid { height: 80%; }
+		</style>
+		
+		<script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+
+		<script>
+		  // Initialize Firebase
+		  var config = {
+			apiKey: "AIzaSyBMitEISRAJbKP6lEjhAYyAsemK_2yhSLE",
+			authDomain: "weatherornot-6545c.firebaseapp.com",
+			databaseURL: "https://weatherornot-6545c.firebaseio.com",
+			projectId: "weatherornot-6545c",
+			storageBucket: "weatherornot-6545c.appspot.com",
+			messagingSenderId: "881439506504"
+		  };
+		  firebase.initializeApp(config);
+		</script>
+	</head>
+	
+	<body>
+		<div id="mapid"></div>
+		
+		<script>
+			//creates a new map object. takes in the id of the div you made, set init coords, and map zoom
+			var mymap = L.map('mapid', {
+				boxZoom:false
+			}).setView([51.505, -0.09], 13);
+			
+			//adds a tile (the actual "map" itself) to the map object. don't modify the things the vars in braces
+			var actualMap = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoid2VydHlsb3A1IiwiYSI6ImNqMzdnb2ZqYTAwY3Uyd25tYmhsM3Rhc2wifQ.ZOoILYsF0s6kkgzbGKxDTg', {
+				attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+				maxZoom: 18
+			}).addTo(mymap);
+			
+			//http://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={api_key}
+			var traffic = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/traffic-day-v2/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoid2VydHlsb3A1IiwiYSI6ImNqMzdnb2ZqYTAwY3Uyd25tYmhsM3Rhc2wifQ.ZOoILYsF0s6kkgzbGKxDTg', {
+				attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+				maxZoom: 18
+			});
+			
+			var clouds	= L.tileLayer('http://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=df3599ec58bd5b740af3da99a01e2858', {
+				attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+				maxZoom: 18
+			});
+			
+			var temperature	= L.tileLayer('http://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=df3599ec58bd5b740af3da99a01e2858', {
+				attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+				maxZoom: 18
+			});
+			
+			var actualMapLayer = {
+				"actualMap":actualMap
+			};
+			
+			var overLayers = {
+				"traffic":traffic,
+				"clouds":clouds,
+				"temperature":temperature
+			};
+			
+			L.control.layers(actualMapLayer, overLayers).addTo(mymap);
+			
+			L.control.attribution({prefix:"hello"}).addTo(mymap);
+			
+			
+			
+			//draw things lol;
+			var marker = L.marker([51.505, -0.09]);
+			var marker2 = L.marker([51.3, -0.09]);
+			var marker3 = L.marker([51.505, -0.03]);
+			var marker4 = L.marker([50.505, -0.01]);
+			
+			//place each marker in a diff group
+			var group = L.layerGroup([marker]);
+			var group2 = L.layerGroup([marker2]);
+			var group3 = L.layerGroup([marker3]);
+			var group4 = L.layerGroup([marker4]);
+			
+			//only one cvan be active at a time (radio button)
+			var baseLayers = {
+				"group":group,
+				"group2":group2
+			};
+			
+			//as many can be used (checkbox)
+			var overlays = {
+				"group3":group3,
+				"group4":group4
+			};
+			
+			//add layers to map
+			L.control.layers(baseLayers, overlays).addTo(mymap);
+			
+			var circle = L.circle([51.508, -0.11], {
+				color: 'red',
+				fillColor: '#f03',
+				fillOpacity: 0.5,
+				radius: 500
+			}).addTo(mymap);
+
+			var polygon = L.polygon([
+				[51.509, -0.08],
+				[51.503, -0.06],
+				[51.51, -0.047]
+			]).addTo(mymap);
+			
+			//Able to bring up popups by clicking icons
+			marker.bindPopup("<b>Hello world!</b><br>I am a popup1.");
+			marker.bindPopup("<b>Hello world!</b><br>I am a popup2.");
+			marker.bindPopup("<b>Hello world!</b><br>I am a popup3.");
+			marker.bindPopup("<b>Hello world!</b><br>I am a popup4.");
+			circle.bindPopup("I am a circle.");
+			polygon.bindPopup("I am a polygon.");
+			
+			
+			//directly places popup on map
+			var popup = L.popup()
+				.setLatLng([51.5, -0.09])
+				.setContent("I am a standalone popup.")
+				.openOn(mymap);
+			
+			/*
+			function onMapClick(e) {
+				alert("You clicked the map at " + e.latlng);
+			}
+
+			mymap.on('click', onMapClick);
+			*/
+			
+			//new popup object
+			var popup = L.popup();
+
+			//callback for clicking on the map
+			function onMapClick(e) {
+				popup
+					.setLatLng(e.latlng)
+					.setContent("You clicked the map at " + e.latlng.toString())
+					.openOn(mymap);
+			}
+
+			//binds clicking action to the callback
+			mymap.on('click', onMapClick);
+		</script>
+		
+	</body>
+</html>
