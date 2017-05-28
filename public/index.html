@@ -62,7 +62,8 @@
 		var query = firebase.database(defaultApp).ref('/post');
 		var newpost = query.push();
 		var latlng = (+latLng.lat.toFixed(2)) + "," + (+latLng.lng.toFixed(2))
-		newpost.set({'latlng': latlng , 'comment': comment})
+		newpost.set({'lat':latLng.lat, 'lng':latLng.lng, 
+			'latlng': latlng , 'comment': comment, 'time':new Date().toString()})
 	}
 
 	//submitComments(1,2,"4567");
@@ -79,28 +80,34 @@
 		.orderByChild('latlng').equalTo(latlng);
 		query.on('value', function(snapshot) {
 			snapshot.forEach(function(childSnapshot) {
-			var childData = childSnapshot.val();
-			console.log(childData)
-			
-			if (!markerMap.has(latlng)) {
-				markerMap.set(latlng, [])
-			}
-			
-			markerMap.get(latlng).push(childData.comment)
+				var childData = childSnapshot.val();
+				console.log(childData)
+				
+				if (!markerMap.has(latlng)) {
+					markerMap.set(latlng, [])
+				}
+				
+				markerMap.get(latlng).push(childData)
 			
 			});
 		});
 		
 		for (var index of markerMap.keys()) {
 			var baseString = ""
-			for (var comment of markerMap.get(index)) {
-				baseString += "<h3>" + comment + "</h3><br><br>"
+			for (var obj of markerMap.get(index)) {
+				baseString += "<h3>" + obj.comment + "</h3><br>" + 
+					obj.time + "<br><br>"
+				
+				L.marker([obj.lat, obj.lng]).bindPopup(L.popup()
+					//.setLatLng(obj.lat, obj.lng)
+					.setContent("<h1>"+ index + "</h1><br><div id='limit'>" + baseString + "</div>"))
+					.addTo(map)
 			}
-			
+			/*
 			L.marker(parseLatLng(index)).bindPopup(L.popup()
 				.setLatLng(thing.lat, thing.lng)
 				.setContent("<h1>"+ index + "</h1><br><div id='limit'>" + baseString + "</div>"))
-				.addTo(map)
+				.addTo(map)*/
 		}
 	}
 
