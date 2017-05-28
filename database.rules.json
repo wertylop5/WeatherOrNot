@@ -3,8 +3,10 @@
     ".read": "auth != null",
     ".write": "auth != null"
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> firebase
+/*{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}*/
