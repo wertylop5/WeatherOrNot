@@ -8,7 +8,6 @@ const config = {
 };
 firebase.initializeApp(config);
 
-const preObject = document.getElementById('test');
 const dbObject = firebase.database().ref();
 
 dbObject.on('value', function(snapshot) {
@@ -20,13 +19,14 @@ dbObject.on('value', function(snapshot) {
 });
 
 // Work in progress
-function writeNewPost(latitude, longitude) {
+function writeNewPost(latitude, longitude, comment) {
     console.log(latitude);
     console.log(longitude);
     // A post entry.
     var postData = {
 	latit: latitude,
-	longit: longitude
+	longit: longitude,
+	comment: comment
     };
 
     // Get a key for a new Post.
