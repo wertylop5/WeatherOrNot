@@ -12,16 +12,16 @@ const dbObject = firebase.database().ref();
 
 dbObject.on('value', function(snapshot) {
     snapshot.forEach(function(childSnapshot) {
-	var childKey = childSnapshot.key;
+	// var childKey = childSnapshot.key;
 	var childData = childSnapshot.val();
-	console.log(childKey + ", " + childData);
+	var latitude = childData['latit'];
+	var longitude = childData['longit'];
+	var comment = childData['comment'];
+	// console.log(comment);
     });
 });
 
-// Work in progress
 function writeNewPost(latitude, longitude, comment) {
-    console.log(latitude);
-    console.log(longitude);
     // A post entry.
     var postData = {
 	latit: latitude,
