@@ -16,14 +16,18 @@
         }
 
         .leaflet-popup-content-wrapper {
-            font-size: 8px;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
 <div id="map"></div>
 <button onClick="home()">Home</button>
+<button onClick="danger_area()">Danger Level at Your Location</button>
+<script src="onDBChange.js"></script>
 <script>
+  var curLat = 0;
+  var curLong = 0;
 
     var attribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
 
@@ -74,13 +78,18 @@
         wind: openWeatherMapUrl('wind')
     });
 
-    var commentForm = '<br><textarea id="comment"></textarea>' +
+    var commentForm = '<br/><p>Danger Level (1-10):<input type="number" id="danger_level" min="1" max="10" required /></p><br/><textarea id="comment" placeholder="Comment on weather conditions..."></textarea>' +
         '<br><button onClick="submitComment()">Submit</button>';
 
-    var submitComment = function () {
-        var comment = document.getElementById('comment').value;
-        console.log(comment);
-    };
+  var submitComment = function (e) {
+  var comment = document.getElementById('comment').value;
+  var danger_level = document.getElementById('danger_level').value;
+  writeNewPost(curLat, curLong, danger_level, comment);
+
+  document.getElementById('comment').value = "";
+  document.getElementById('danger_level').value = "";
+
+  };
 
     var popup = L.popup();
 
@@ -109,7 +118,9 @@
                     windSpeed: json.wind.speed
                     }).replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
                     + commentForm)
-                .openOn(map);
+  .openOn(map);
+  curLat = latlng['lat'];
+  curLong = latlng['lng'];
         });
     };
 
@@ -148,6 +159,19 @@
         });
     }
 
+  var danger_area = function() {
+  navigator.geolocation.getCurrentPosition(function (position) {
+  var lat = position.coords.latitude;
+  var lng = position.coords.longitude;
+  var avg_danger_level = getDangerZones(lat, lng);
+  console.log(avg_danger_level);
+  if (getDangerZones(lat, lng) !== -1){
+  alert(avg_danger_level);
+  } else {
+  alert("N/A. No data found for the area.")
+  }
+  });
+  }
 
 </script>
 </body>
