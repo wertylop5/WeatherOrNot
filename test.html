@@ -69,9 +69,9 @@
         var weatherAtUrl = function (lat, lng) {
             return "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lng + "&units=imperial&appid=" + appId;
         };
-		
+
 		var popup = L.popup();
-		
+
 		function getComment() {
 			var test = document.getElementById("lol").value;
 			console.log("testkey: " + test);
@@ -87,11 +87,11 @@
 						+ "<button onClick='getComment()'>Submit</button>"
 						+ "<h2>@" + popup.getLatLng().toString()+"</h2>");
 		}
-		
+
         //callback for clicking on the map
         function onMapClick(e) {
 			if (e != null) {
-				if (e.hasOwnProperty("originalEvent") ) { 
+				if (e.hasOwnProperty("originalEvent") ) {
 					var guy = e.originalEvent;
 					if ("charCode" in guy) {
 						getComment();
@@ -128,8 +128,8 @@
                     .openOn(map);
             });
         }
-		
-		
+
+
 
         //binds clicking action to the callback
         map.on('click', onMapClick);
