@@ -1,0 +1,154 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
+          integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"
+            integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg=="
+            crossorigin=""></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.36.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.36.0/mapbox-gl.css' rel='stylesheet'/>
+    <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+    <script src="string-format.js"></script>
+    <style>
+        #map {
+            height: 90%;
+        }
+
+        .leaflet-popup-content-wrapper {
+            font-size: 8px;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<button onClick="home()">Home</button>
+<script>
+
+    var attribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
+
+    var mapBoxUrl = function (type) {
+        return 'https://api.mapbox.com/styles/v1/mapbox/' + type + '/tiles/512/{z}/{x}/{y}?access_token=pk.eyJ1Ijoid2VydHlsb3A1IiwiYSI6ImNqMzdnb2ZqYTAwY3Uyd25tYmhsM3Rhc2wifQ.ZOoILYsF0s6kkgzbGKxDTg';
+    };
+
+    var openWeatherMapUrl = function (type) {
+        return 'http://tile.openweathermap.org/map/' + type + '_new/{z}/{x}/{y}.png?appid=df3599ec58bd5b740af3da99a01e2858';
+    };
+
+    var appId = "33d3623cc587372f825d46cc063cf544";
+
+    var weatherAtUrl = function (lat, lng) {
+        return "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lng + "&units=imperial&appid=" + appId;
+    };
+
+    var map = L.map('map', {
+        boxZoom: false
+    }).setView([0, 0], 10);
+
+    var addLayers = function (layers) {
+        const options = {attribution: ""};
+        const baseLayers = {};
+        const overlays = {};
+        for (const layerName in layers) {
+            var layer = layers[layerName];
+            if (layer.constructor === Array) {
+                layer = layer[0];
+                baseLayers[layerName] = typeof(layer) !== "string" ? layer : L.tileLayer(layer, options);
+                map.addLayer(baseLayers[layerName]);
+            } else {
+                overlays[layerName] = typeof(layer) !== "string" ? layer : L.tileLayer(layer, options);
+            }
+        }
+        L.control.layers(baseLayers, overlays).addTo(map);
+    };
+    addLayers({
+        streets: [mapBoxUrl('streets-v10')],
+        dark: mapBoxUrl('dark-v9'),
+        satellite: mapBoxUrl('satellite-v9'),
+        hybrid: mapBoxUrl('satellite-streets-v10'),
+        traffic: mapBoxUrl('traffic-day-v2'),
+        clouds: openWeatherMapUrl('clouds'),
+        temperature: openWeatherMapUrl('temp'),
+        precipitation: openWeatherMapUrl('precipitation'),
+        pressure: openWeatherMapUrl('pressure'),
+        wind: openWeatherMapUrl('wind')
+    });
+
+    var commentForm = '<br><textarea id="comment" onkeypress="if (event.keyCode == 13) submitComment()"></textarea>' +
+        '<br><button onClick="submitComment()">Submit</button>';
+
+    var submitComment = function () {
+        var comment = document.getElementById('comment').value;
+        console.log(comment);
+    };
+
+    var popup = L.popup();
+
+    var showWeatherStats = function (e) {
+        if (!e.hasOwnProperty('latlng')) {
+            return;
+        }
+        const latlng = e.latlng;
+        fetch(weatherAtUrl(latlng.lat, latlng.lng)).then(function (response) {
+            return response.json();
+        }).then(function (json) {
+            popup.setLatLng(latlng)
+                .setContent(format('The weather in {name}, {country} is {weather}: <br>'
+                    + 'Temperature: {currentTemp}&deg; F, Low: {minTemp}&deg; F, High: {maxTemp}&deg F;<br>'
+                    + '\tPressure: {pressure} hPa<br>'
+                    + '\tHumidity: {humidity}%<br>'
+                        + '\tWind: {windSpeed} mph<br>', {
+                    name: json.name,
+                    country: json.sys.country,
+                    weather: json.weather[0].description,
+                    currentTemp: json.main.temp,
+                    minTemp: json.main.temp_min,
+                    maxTemp: json.main.temp_max,
+                    pressure: json.main.pressure,
+                    humidity: json.main.humidity,
+                    windSpeed: json.wind.speed
+                    }).replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
+                    + commentForm)
+                .openOn(map);
+        });
+    };
+
+    clicked = 0;
+    var timeout = 200;
+
+    map.on('click', function (e) {
+        clicked++;
+        setTimeout(function () {
+            if (clicked == 1) {
+                showWeatherStats(e);
+                clicked = 0;
+            }
+        }, timeout);
+    });
+
+    map.on('dblclick', function (e) {
+        clicked = 0;
+        map.zoomIn();
+    });
+
+    var renderMap = function (position) {
+        console.log(position);
+        var coords = position.coords;
+
+    };
+
+    navigator.geolocation.getCurrentPosition(function (position) {
+        map.setView([position.coords.latitude, position.coords.longitude]);
+    });
+
+    var home = function () {
+        var currentZoom = map.getZoom();
+        navigator.geolocation.getCurrentPosition(function (position) {
+            map.flyTo([position.coords.latitude, position.coords.longitude], Math.max(currentZoom, 10));
+        });
+    }
+
+
+</script>
+</body>
+</html>
