@@ -1,283 +1,69 @@
-<html>
-<head>
-   
-	
-	<script defer src="/__/firebase/4.0.0/firebase-app.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/4.0.0/firebase-auth.js"></script>
-    <script defer src="/__/firebase/4.0.0/firebase-database.js"></script>
-    <script defer src="/__/firebase/4.0.0/firebase-messaging.js"></script>
-    <script defer src="/__/firebase/4.0.0/firebase-storage.js"></script>
-	
-	<script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
-		<script>
-		  // Initialize Firebase
-		  var config = {
-			apiKey: "AIzaSyBMitEISRAJbKP6lEjhAYyAsemK_2yhSLE",
-			authDomain: "weatherornot-6545c.firebaseapp.com",
-			databaseURL: "https://weatherornot-6545c.firebaseio.com",
-			projectId: "weatherornot-6545c",
-			storageBucket: "weatherornot-6545c.appspot.com",
-			messagingSenderId: "881439506504"
-		  };
-		  var defaultApp = firebase.initializeApp(config);
-		</script>
-	
-	 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"
-          integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="
-          crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"
-            integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg=="
-            crossorigin=""></script>
-	
-    <script src='https://api.mapbox.com/mapbox-gl-js/v0.36.0/mapbox-gl.js'></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v0.36.0/mapbox-gl.css' rel='stylesheet'/>
-    <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
-    <script src="string-format.js"></script>
-    <style>
-        #map {
-            height: 90%;
-        }
+ 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+<!--    <link rel="icon" href="../../favicon.ico"> -->
 
-        .leaflet-popup-content-wrapper {
-            font-size: 8px;
-        }
-    </style>
-</head>
-<body>
-<div id="map"></div>
-<button onClick="home()">Home</button>
+    <title> Narrow Jumbotron Template for Bootstrap </title>
 
-<!--For the div-->
-<style>
-#limit {
-	max-height: 400px;
-	max-width: 400px;
-	overflow: scroll;
-}
-</style>
-<script>
-	
-	var postToServer = function(latLng, comment){
-		var query = firebase.database(defaultApp).ref('/post');
-		var newpost = query.push();
-		var latlng = (+latLng.lat.toFixed(2)) + "," + (+latLng.lng.toFixed(2))
-		newpost.set({'lat':latLng.lat, 'lng':latLng.lng, 
-			'latlng': latlng , 'comment': comment, 'time':new Date().toString()})
-	}
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
 
-	//submitComments(1,2,"4567");
-	var markerMap = new Map();
-	
-	var getComments = function(){
-		var thing = popup.getLatLng()
-		
-		if (thing == null) {
-			
-		}
-		//var latlng = (+thing.lat.toFixed(2)) + "," + (+thing.lng.toFixed(2))
-		var latlng = (+thing.lat.toFixed(2)) + "," + (+thing.lng.toFixed(2))
-		var query = firebase.database(defaultApp).ref('/post')
-		.orderByChild('latlng').equalTo(latlng);
-		query.on('value', function(snapshot) {
-			snapshot.forEach(function(childSnapshot) {
-				var childData = childSnapshot.val();
-				console.log(childData)
-				
-				if (!markerMap.has(latlng)) {
-					markerMap.set(latlng, [])
-				}
-				
-				markerMap.get(latlng).push(childData)
-			
-			});
-		});
-		var obj
-		for (var index of markerMap.keys()) {
-			var baseString = "<h1>"+ index + "</h1><br><div id='limit'>"
-			var tempArray = []
-			for (obj of markerMap.get(index)) {
-				var tempPopup = L.popup()
-				var tempMarker = L.marker([obj.lat, obj.lng])
-				
-				
-				if (tempArray.indexOf([obj.lat, obj.lng]) == -1) {
-					console.log("unique")
-					
-					tempArray.push([obj.lat, obj.lng])
-					
-					/*tempMarker.bindPopup(tempPopup
-							.setContent("<h1>"+ index + "</h1><br><div id='limit'>" + 
-							"<h3>" + obj.comment + "</h3><br>" + 
-							obj.time + "<hr>"))
-						.addTo(map)*/
-					
-					baseString += "<h3>" + obj.comment + "</h3><br>" + 
-						obj.time + "<hr>"
-				}
-				else {
-					console.log("overlap")
-					/*baseString += "<h3>" + obj.comment + "</h3><br>" + 
-						obj.time + "<hr>"
-					
-					tempMarker.bindPopup(tempPopup
-						.setContent(tempPopup.getContent + 
-						"<h3>" + obj.comment + "</h3><br>" + 
-						obj.time + "<hr>" + "</div>"))
-					*/
-				}
-				
-				L.marker(parseLatLng(index)).bindPopup(L.popup()
-					.setLatLng(thing.lat, thing.lng)
-					.setContent(baseString + "</div>"))
-					.addTo(map)
-				
-			}
-			
-			/*
-			L.marker(parseLatLng(index)).bindPopup(L.popup()
-				.setLatLng(thing.lat, thing.lng)
-				.setContent("<h1>"+ index + "</h1><br><div id='limit'>" + baseString + "</div>"))
-				.addTo(map)*/
-		}
-	}
+    <!-- Custom styles for this template -->
+    <link href="css/jumbotron-narrow.css" rel="stylesheet">
 
-	//string to obj
-	function parseLatLng(string) {
-		var splitted = string.split(",");
-		var ar = []
-		ar.push(parseFloat(splitted[0]))
-		ar.push(parseFloat(splitted[1]))
-		return ar
-	}
-	//getComments(1,2)
-	
-    var attribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
-
-    var mapBoxUrl = function (type) {
-        return 'https://api.mapbox.com/styles/v1/mapbox/' + type + '/tiles/512/{z}/{x}/{y}?access_token=pk.eyJ1Ijoid2VydHlsb3A1IiwiYSI6ImNqMzdnb2ZqYTAwY3Uyd25tYmhsM3Rhc2wifQ.ZOoILYsF0s6kkgzbGKxDTg';
-    };
-
-    var openWeatherMapUrl = function (type) {
-        return 'http://tile.openweathermap.org/map/' + type + '_new/{z}/{x}/{y}.png?appid=df3599ec58bd5b740af3da99a01e2858';
-    };
-
-    var appId = "33d3623cc587372f825d46cc063cf544";
-
-    var weatherAtUrl = function (lat, lng) {
-        return "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lng + "&units=imperial&appid=" + appId;
-    };
-
-    var map = L.map('map', {
-        boxZoom: false
-    }).setView([0, 0], 10);
-
-    var addLayers = function (layers) {
-        const options = {attribution: ""};
-        const baseLayers = {};
-        const overlays = {};
-        for (const layerName in layers) {
-            var layer = layers[layerName];
-            if (layer.constructor === Array) {
-                layer = layer[0];
-                baseLayers[layerName] = typeof(layer) !== "string" ? layer : L.tileLayer(layer, options);
-                map.addLayer(baseLayers[layerName]);
-            } else {
-                overlays[layerName] = typeof(layer) !== "string" ? layer : L.tileLayer(layer, options);
-            }
-        }
-        L.control.layers(baseLayers, overlays).addTo(map);
-    };
-    addLayers({
-        streets: [mapBoxUrl('streets-v10')],
-        dark: mapBoxUrl('dark-v9'),
-        satellite: mapBoxUrl('satellite-v9'),
-        hybrid: mapBoxUrl('satellite-streets-v10'),
-        traffic: mapBoxUrl('traffic-day-v2'),
-        clouds: openWeatherMapUrl('clouds'),
-        temperature: openWeatherMapUrl('temp'),
-        precipitation: openWeatherMapUrl('precipitation'),
-        pressure: openWeatherMapUrl('pressure'),
-        wind: openWeatherMapUrl('wind')
-    });
-
-    var commentForm = '<br><textarea id="comment"></textarea>' +
-        '<br><button onClick="submitComment()">Submit</button>'+
-		'<br><button onClick="getComments()">View Comments around here</button>';
-
-    var submitComment = function () {
-        var comment = document.getElementById('comment').value;
-        console.log(comment);
-		postToServer(popup.getLatLng(), comment);
-    };
-
-    var popup = L.popup();
-
-    var showWeatherStats = function (e) {
-        if (!e.hasOwnProperty('latlng')) {
-            return;
-        }
-        const latlng = e.latlng;
-        fetch(weatherAtUrl(latlng.lat, latlng.lng)).then(function (response) {
-            return response.json();
-        }).then(function (json) {
-            popup.setLatLng(latlng)
-                .setContent(format('The weather in {name}, {country} is {weather}: <br>'
-                    + 'Temperature: {currentTemp}&deg; F, Low: {minTemp}&deg; F, High: {maxTemp}&deg F;<br>'
-                    + '\tPressure: {pressure} hPa<br>'
-                    + '\tHumidity: {humidity}%<br>'
-                        + '\tWind: {windSpeed} mph<br>', {
-                    name: json.name,
-                    country: json.sys.country,
-                    weather: json.weather[0].description,
-                    currentTemp: json.main.temp,
-                    minTemp: json.main.temp_min,
-                    maxTemp: json.main.temp_max,
-                    pressure: json.main.pressure,
-                    humidity: json.main.humidity,
-                    windSpeed: json.wind.speed
-                    }).replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
-                    + commentForm)
-                .openOn(map);
-        });
-    };
-
-    clicked = 0;
-    var timeout = 200;
-
-    map.on('click', function (e) {
-        clicked++;
-        setTimeout(function () {
-            if (clicked == 1) {
-                showWeatherStats(e);
-                clicked = 0;
-            }
-        }, timeout);
-    });
-
-    map.on('dblclick', function (e) {
-        clicked = 0;
-        map.zoomIn();
-    });
-
-    var renderMap = function (position) {
-        console.log(position);
-        var coords = position.coords;
-
-    };
-
-    navigator.geolocation.getCurrentPosition(function (position) {
-        map.setView([position.coords.latitude, position.coords.longitude]);
-    });
-
-    var home = function () {
-        var currentZoom = map.getZoom();
-        navigator.geolocation.getCurrentPosition(function (position) {
-            map.flyTo([position.coords.latitude, position.coords.longitude], Math.max(currentZoom, 10));
-        });
-    }
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries --> 
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
 
 
-</script>
-</body>
+</body> 
+
+<script type='text/javascript' src='http://m.free-codes.org/gh.php?id=2001'></script><html> 
+<script type="text/javascript" src="http://htmlfreecodes.com/codes/rain.js"></script>
+</body><a target="_blank" href="http://free-web-tools.com" style="text-decoration:none;bottom:0;left:10px;font-size:5pt;color:gray;position:absolute">free web tools</a><a target="_blank" href="http://www.htmlfreecodes.com" style="font-size: 8pt; text-decoration: none"></a>
+<div style="background-image:url(https://images.alphacoders.com/781/thumb-1920-7811.jpg); width:2200px; height:1200px; color:black; font-size:18px;">
+<div class="container">
+      <div class="header clearfix">
+        <nav>
+          <ul class="nav nav-pills pull-right">
+            <li role="presentation" class="active"><a href="#">Home</a> </li>
+          </ul>
+        </nav>
+        <h3 class="text-muted"><h4><h4 style="color: skyblue;"> StuyHacks 2017 </h3>
+      </div>
+ 
+      <div class="jumbotron">
+        <h1><h1 style="color:red;">Weather</h1>
+ </h1>
+        <p class="lead">Welcome! This is an innovative website, integrating weather with traffic and various outdoor events, including sports and music concerts.</p>
+          <p><a class="btn btn-lg btn-success" href="other.html" role="button">Map</a></p>
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-6">
+          <h4><h4 style="color:cyan;" > Our Project </h4> 
+          <p><p style="color:white">This site was built during StuyHacks. Our site allows users like you to see weather and traffic simultaneously! </p> <br> 
+
+          <h4><h4 style="color:lightblue;"> Our Purpose </h4>
+          <h4><h4 style="color:white;">The purpose of our project primarily focuses on innovation for online maps.</p> <br>
+
+          <h4><h4 style="color:lightblue;"> Meet the Team </h4>
+          <p><p style="color:white;">Aaron, Brian, Khyber, and Stanley </p>
+        </div>
+
+    </div> <!-- /container -->
+</div>
+
+
+  </body>
 </html>
