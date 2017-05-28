@@ -74,17 +74,30 @@
         wind: openWeatherMapUrl('wind')
     });
 
+    var commentForm = '<br><textarea id="comment" onkeypress="if (event.keyCode == 13) submitComment()"></textarea>' +
+        '<br><button onClick="submitComment()">Submit</button>';
+
+    var submitComment = function () {
+        var comment = document.getElementById('comment').value;
+        console.log(comment);
+    };
+
+    var popup = L.popup();
+
     var showWeatherStats = function (e) {
+        if (!e.hasOwnProperty('latlng')) {
+            return;
+        }
         const latlng = e.latlng;
         fetch(weatherAtUrl(latlng.lat, latlng.lng)).then(function (response) {
             return response.json();
         }).then(function (json) {
-            L.popup().setLatLng(latlng)
+            popup.setLatLng(latlng)
                 .setContent(format('The weather in {name}, {country} is {weather}: <br>'
                     + 'Temperature: {currentTemp}&deg; F, Low: {minTemp}&deg; F, High: {maxTemp}&deg F;<br>'
                     + '\tPressure: {pressure} hPa<br>'
                     + '\tHumidity: {humidity}%<br>'
-                    + '\tWind: {windSpeed} mph', {
+                        + '\tWind: {windSpeed} mph<br>', {
                     name: json.name,
                     country: json.sys.country,
                     weather: json.weather[0].description,
@@ -94,25 +107,27 @@
                     pressure: json.main.pressure,
                     humidity: json.main.humidity,
                     windSpeed: json.wind.speed
-                }).replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;"))
+                    }).replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
+                    + commentForm)
                 .openOn(map);
         });
     };
 
-    map.clicked = 0;
+    clicked = 0;
+    var timeout = 200;
 
     map.on('click', function (e) {
-        map.clicked++;
+        clicked++;
         setTimeout(function () {
-            if (map.clicked == 1) {
+            if (clicked == 1) {
                 showWeatherStats(e);
-                map.clicked = 0;
+                clicked = 0;
             }
-        }, 300);
+        }, timeout);
     });
 
     map.on('dblclick', function (e) {
-        map.clicked = 0;
+        clicked = 0;
         map.zoomIn();
     });
 
@@ -132,6 +147,7 @@
             map.flyTo([position.coords.latitude, position.coords.longitude], Math.max(currentZoom, 10));
         });
     }
+
 
 </script>
 </body>
