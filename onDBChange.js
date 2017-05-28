@@ -1,11 +1,11 @@
 const config = {
-    apiKey: "AIzaSyACgEdPWnk8lOheaJIdTnH2JQ-4W7p9lZY",
-    authDomain: "weatherornot-7c7eb.firebaseapp.com",
-    databaseURL: "https://weatherornot-7c7eb.firebaseio.com",
-    projectId: "weatherornot-7c7eb",
-    storageBucket: "weatherornot-7c7eb.appspot.com",
-    messagingSenderId: "834723964229"
-};
+	apiKey: "AIzaSyBMitEISRAJbKP6lEjhAYyAsemK_2yhSLE",
+	authDomain: "weatherornot-6545c.firebaseapp.com",
+	databaseURL: "https://weatherornot-6545c.firebaseio.com",
+	projectId: "weatherornot-6545c",
+	storageBucket: "weatherornot-6545c.appspot.com",
+	messagingSenderId: "881439506504"
+  };
 firebase.initializeApp(config);
 
 const preObject = document.getElementById('test');
@@ -18,6 +18,7 @@ dbObject.on('value', function(snapshot) {
 	console.log(childKey + ", " + childData);
     });
 });
+
 
 // Work in progress
 function writeNewPost(latitude, longitude) {
